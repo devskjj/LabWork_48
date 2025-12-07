@@ -2,6 +2,7 @@ package server;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import model.DataModel;
 import server.cookies.Cookie;
 import server.enums.ContentType;
 import server.enums.ResponseCodes;

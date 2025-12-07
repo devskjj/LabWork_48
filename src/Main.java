@@ -1,3 +1,4 @@
+import model.DataModel;
 import server.ServerLogic;
 
 import java.io.IOException;

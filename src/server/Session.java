@@ -1,11 +1,9 @@
 package server;
 
+import model.DataModel;
 import server.cookies.Cookie;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class Session {
     private static Map<String, List<DataModel>> userSession = new HashMap<>();
