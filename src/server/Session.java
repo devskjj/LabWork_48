@@ -19,7 +19,7 @@ public class Session {
     public static Cookie createSessionCookie() {
         String sessionId = createSessionId();
         userSession.put(sessionId, new ArrayList<DataModel>());
-        return Cookie.make("sessionId", sessionId, 0, true);
+        return Cookie.make("sessionId", sessionId, -1, true);
     }
 
     private static void add(String name, DataModel dataModel) {
