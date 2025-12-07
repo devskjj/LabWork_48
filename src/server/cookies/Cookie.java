@@ -11,7 +11,7 @@ import java.util.Objects;
 public class Cookie<V> {
     private final String name;
     private final V value;
-    private Integer maxAge;
+    private int maxAge;
     private boolean httpOnly;
 
     public Cookie(String name, V value, int maxAge, boolean httpOnly) {
