@@ -22,8 +22,14 @@ public class ServerLogic extends BasicServer {
 
     public ServerLogic(String host, int port, DataModel dataModel) throws IOException {
         super(host, port, dataModel);
+        registerGet("/votes", this::votesHandler);
+        registerGet("/thankyou", this::thankyouHandler);
+    }
 
+    private void thankyouHandler(HttpExchange httpExchange) {
+    }
 
+    private void votesHandler(HttpExchange httpExchange) {
     }
 
     private Map<String, String> parsePostBody(HttpExchange exchange) {

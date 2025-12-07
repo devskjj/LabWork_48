@@ -26,4 +26,12 @@ public class Candidate {
     public void setVoteCount(int voteCount) {
         this.voteCount = voteCount;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Candidate{");
+        sb.append("name='").append(name).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

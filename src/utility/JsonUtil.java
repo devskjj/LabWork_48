@@ -2,7 +2,6 @@ package utility;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import model.DataModel;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -14,11 +13,11 @@ public class JsonUtil {
         return new GsonBuilder().setPrettyPrinting().serializeNulls().create();
     }
 
-    public static DataModel load(String file) throws IOException {
+    public static JsonContainer load(String file) throws IOException {
         Path path = Path.of("src/json", file);
 
         try (FileReader reader = new FileReader(path.toFile())) {
-            return getGson().fromJson(reader, DataModel.class);
+            return getGson().fromJson(reader, JsonContainer.class);
         } catch (IOException e) {
             throw new IOException("Ошибка при загрузке файла " + file, e);
         }

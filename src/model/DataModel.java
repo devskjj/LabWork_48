@@ -1,6 +1,7 @@
 package model;
 
 import domain.Candidate;
+import utility.JsonContainer;
 import utility.JsonUtil;
 
 import java.io.IOException;
@@ -12,18 +13,20 @@ public class DataModel {
 
     public DataModel() {
         this.candidatesData = new ArrayList<>();
-        totalVotes = 0;
+        this.totalVotes = 0;
         loadData();
     }
 
-    private void loadData() {
-        try {
-            DataModel data = JsonUtil.load("candidates.json");
-            if (data != null) {
-                this.candidatesData = data.getCandidatesData();
+    public void loadData() {
+        if (candidatesData.isEmpty()) {
+            try {
+                JsonContainer data = JsonUtil.load("candidates.json");
+                if (data != null) {
+                    this.candidatesData = data.getCandidates();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
