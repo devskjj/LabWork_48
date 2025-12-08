@@ -20,8 +20,8 @@ import java.util.Map;
 public class ServerLogic extends BasicServer {
     private final static Configuration freemarker = initFreeMarker();
 
-    public ServerLogic(String host, int port, DataModel dataModel) throws IOException {
-        super(host, port, dataModel);
+    public ServerLogic(String host, int port) throws IOException {
+        super(host, port);
         registerGet("/", this::candidatesHandler);
         registerGet("/votes", this::votesHandler);
         registerGet("/thankyou", this::thankyouHandler);
@@ -48,9 +48,19 @@ public class ServerLogic extends BasicServer {
     }
 
     private void votesHandler(HttpExchange exchange) {
+        String cookie = getCookie(exchange);
+        String sessionId = Cookie.parse(cookie).get("sessionId");
+        if (sessionId==null || sessionId.isEmpty()) {
+            DataModel candidates = new DataModel();
+            Cookie setCookie = Session.createSessionCookie(candidates);
+            setCookie(exchange, setCookie);
+            redirect303(exchange, "/");
+            return;
+        }
+        DataModel existingDataModel = Session.getSession().get(sessionId);
         HashMap<String, Object> candidates = new HashMap<>();
-        candidates.put("candidates", dataModel.getCandidatesData());
-        candidates.put("percentage", dataModel.calculatePercentageForAllCandidates());
+        candidates.put("candidates", existingDataModel.getCandidatesData());
+        candidates.put("percentage", existingDataModel.calculatePercentageForAllCandidates());
         renderTemplate(exchange, "votes.html", candidates);
     }
 

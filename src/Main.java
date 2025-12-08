@@ -8,9 +8,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            DataModel dataModel = new DataModel();
-            dataModel.getCandidatesData().stream().forEach(System.out::println);
-            new ServerLogic("localhost", 9889, dataModel).start();
+            new ServerLogic("localhost", 9889).start();
         } catch (IOException e) {
             e.printStackTrace();
         }

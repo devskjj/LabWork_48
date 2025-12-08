@@ -27,11 +27,9 @@ public abstract class BasicServer {
     private final HttpServer server;
     private final String dataDir = "data";
     private Map<String, RouteHandler> routes = new HashMap<>();
-    protected DataModel dataModel;
 
-    protected BasicServer(String host, int port, DataModel dataModel) throws IOException {
+    protected BasicServer(String host, int port) throws IOException {
         server = createServer(host, port);
-        this.dataModel = dataModel;
         registerCommonHandlers();
     }
 
