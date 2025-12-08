@@ -1,6 +1,7 @@
 package server;
 
 import com.sun.net.httpserver.HttpExchange;
+import domain.Candidate;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -24,6 +25,7 @@ public class ServerLogic extends BasicServer {
         super(host, port);
         registerGet("/", this::candidatesHandler);
         registerGet("/votes", this::votesHandler);
+        registerPost("/thankyou", this::thankyouFormHandler);
         registerGet("/thankyou", this::thankyouHandler);
     }
 
@@ -43,6 +45,33 @@ public class ServerLogic extends BasicServer {
         renderTemplate(exchange, "candidates.html", candidates);
     }
 
+    private void thankyouFormHandler(HttpExchange exchange) {
+        String cookie = getCookie(exchange);
+        String sessionId = Cookie.parse(cookie).get("sessionId");
+        if (sessionId == null || sessionId.isEmpty()) {
+            DataModel candidates = new DataModel();
+            Cookie setCookie = Session.createSessionCookie(candidates);
+            setCookie(exchange, setCookie);
+            redirect303(exchange, "/");
+            return;
+        }
+        DataModel existingDataModel = Session.getSession().get(sessionId);
+        Map<String, String> postBody = parsePostBody(exchange);
+        String candidateId = postBody.get("candidateId");
+        Candidate candidate = existingDataModel.getCandidatesData().stream()
+                .filter(c -> c.getId().equals(candidateId))
+                .findFirst()
+                .orElse(null);
+        if (candidate==null) {
+            sendError(exchange, ResponseCodes.NOT_FOUND, "Выбранный кандидат не найден.");
+            return;
+        }
+        candidate.setVoteCount(candidate.getVoteCount()+1);
+        existingDataModel.setLastVotedCandidate(candidate);
+        System.out.println("check1");
+        redirect303(exchange, "/thankyou");
+    }
+
     private void thankyouHandler(HttpExchange exchange) {
         String cookie = getCookie(exchange);
         String sessionId = Cookie.parse(cookie).get("sessionId");
@@ -54,10 +83,12 @@ public class ServerLogic extends BasicServer {
             return;
         }
         DataModel existingDataModel = Session.getSession().get(sessionId);
+        Candidate lastVotedCandidate = existingDataModel.getLastVotedCandidate();
         HashMap<String, Object> candidate = new HashMap<>();
-        Map<String, String> postBody = parsePostBody(exchange);
-        String candidateId = postBody.get("candidateId");
-        candidate.put("candidate", existingDataModel.calculatePercentageByCandidateId(candidateId));
+        candidate.put("candidate", lastVotedCandidate);
+        candidate.put("percentage", existingDataModel.calculatePercentageByCandidateId(lastVotedCandidate.getId()));
+        System.out.println(lastVotedCandidate.getId());
+        System.out.println(existingDataModel.calculatePercentageByCandidateId(lastVotedCandidate.getId()));
         renderTemplate(exchange, "thankyou.html", candidate);
     }
 

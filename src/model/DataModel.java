@@ -9,6 +9,7 @@ import java.util.*;
 
 public class DataModel {
     private List<Candidate> candidatesData;
+    private Candidate lastVotedCandidate;
 
     public DataModel() {
         this.candidatesData = new ArrayList<>();
@@ -76,5 +77,13 @@ public class DataModel {
 
     public int getTotalVotes() {
         return candidatesData.stream().mapToInt(Candidate::getVoteCount).sum();
+    }
+
+    public Candidate getLastVotedCandidate() {
+        return lastVotedCandidate;
+    }
+
+    public void setLastVotedCandidate(Candidate lastVotedCandidate) {
+        this.lastVotedCandidate = lastVotedCandidate;
     }
 }
