@@ -35,6 +35,7 @@ public class ServerLogic extends BasicServer {
            Cookie setCookie = Session.createSessionCookie(candidates);
            setCookie(exchange, setCookie);
            redirect303(exchange, "/");
+           return;
         }
         DataModel existingDataModel = Session.getSession().get(sessionId);
         HashMap<String, Object> candidates = new HashMap<>();
@@ -43,6 +44,7 @@ public class ServerLogic extends BasicServer {
     }
 
     private void thankyouHandler(HttpExchange exchange) {
+
     }
 
     private void votesHandler(HttpExchange exchange) {

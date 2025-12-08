@@ -17,7 +17,7 @@ public class Session {
     public static Cookie createSessionCookie(DataModel dataModel) {
         String sessionId = createSessionId();
         userSession.put(sessionId, dataModel);
-        return Cookie.make("sessionId", sessionId, -1, true);
+        return Cookie.make("sessionId", sessionId, 600, true);
     }
 
     public static void remove(String sessionId) {
