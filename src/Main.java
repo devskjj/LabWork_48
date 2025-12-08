@@ -1,3 +1,4 @@
+import domain.Candidate;
 import model.DataModel;
 import server.ServerLogic;
 
@@ -10,6 +11,9 @@ public class Main {
         try {
             DataModel dataModel = new DataModel();
             dataModel.getCandidatesData().stream().forEach(System.out::println);
+            for (Candidate candidate : dataModel.getCandidatesData()) {
+                System.out.println(candidate.getId() + " " + candidate.getName() + " " + candidate.getPhoto());
+            }
             new ServerLogic("localhost", 9889, dataModel).start();
         } catch (IOException e) {
             e.printStackTrace();

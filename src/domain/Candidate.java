@@ -7,7 +7,7 @@ public class Candidate {
     private transient int voteCount;
 
     public Candidate(String name, String photo) {
-        this.id = "";
+        this.id = " ";
         this.name = name;
         this.photo = photo;
         this.voteCount = 0;

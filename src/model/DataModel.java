@@ -13,6 +13,10 @@ public class DataModel {
     public DataModel() {
         this.candidatesData = new ArrayList<>();
         loadData();
+        int id = 1000;
+        for (Candidate candidate : this.candidatesData) {
+            candidate.setId(String.valueOf(id++));
+        }
     }
 
     public void loadData() {
