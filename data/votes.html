@@ -13,7 +13,7 @@
 
     <main class="flex flex-wrap align-center">
         <#list candidates as candidate>
-    <div class="card">
+    <div class="card" <#if candidate_index == 0>style="background-color: #ef0035; padding-bottom: 20px; border-radius: 8px;"</#if>>
       <div class="flex flex-col align-center" href="#">
         <img src="images/${candidate.photo}">
           <p>${candidate.name} has ${percentage[candidate.name]}% of all votes</p>
