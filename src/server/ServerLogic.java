@@ -15,8 +15,11 @@ import utility.Utils;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ServerLogic extends BasicServer {
     private final static Configuration freemarker = initFreeMarker();
@@ -65,7 +68,11 @@ public class ServerLogic extends BasicServer {
     private void votesHandler(HttpExchange exchange) {
         DataModel existingDataModel = returnExistingDataModel(exchange);
         HashMap<String, Object> candidates = new HashMap<>();
-        candidates.put("candidates", existingDataModel.getCandidatesData());
+        List<Candidate> sortedCandidates = existingDataModel.getCandidatesData().stream()
+                .sorted(Comparator.comparing(Candidate::getVoteCount).reversed())
+                .collect(Collectors.toList());
+
+        candidates.put("candidates", sortedCandidates);
         candidates.put("percentage", existingDataModel.calculatePercentageForAllCandidates());
         renderTemplate(exchange, "votes.html", candidates);
     }
