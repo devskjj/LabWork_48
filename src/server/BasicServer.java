@@ -2,7 +2,6 @@ package server;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import model.DataModel;
 import server.cookies.Cookie;
 import server.enums.ContentType;
 import server.enums.ResponseCodes;
@@ -106,7 +105,7 @@ public abstract class BasicServer {
             var data = Files.readAllBytes(pathToFile);
             sendByteData(exchange, ResponseCodes.OK, contentType, data);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка " + e.getMessage());
         }
     }
 
@@ -133,7 +132,7 @@ public abstract class BasicServer {
             var data = "404 Not found".getBytes();
             sendByteData(exchange, ResponseCodes.NOT_FOUND, ContentType.TEXT_PLAIN, data);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка " + e.getMessage());
         }
     }
 
@@ -154,7 +153,7 @@ public abstract class BasicServer {
         try (BufferedReader br = new BufferedReader(isr)) {
             return br.lines().collect(Collectors.joining(""));
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка " + e.getMessage());
         }
         return "";
     }
@@ -168,7 +167,7 @@ public abstract class BasicServer {
                 os.write(bytes);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка " + e.getMessage());
         }
     }
 

@@ -28,13 +28,9 @@ public class DataModel {
                     this.candidatesData = data.getCandidates();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Ошибка " + e.getMessage());
             }
         }
-    }
-
-    public void sortByVotes() {
-        candidatesData.sort(Comparator.comparing(Candidate::getVoteCount).reversed());
     }
 
     public int calculatePercentageByCandidateId(String candidateId) {
@@ -42,10 +38,7 @@ public class DataModel {
             return 0;
         }
         Optional<Candidate> candidate = candidatesData.stream().filter(c -> c.getId().equals(candidateId)).findFirst();
-        if (candidate.isPresent()) {
-            return (int) Math.floor((candidate.get().getVoteCount() / (double) getTotalVotes()) * 100);
-        }
-        return 0;
+        return candidate.map(value -> (int) Math.floor((value.getVoteCount() / (double) getTotalVotes()) * 100)).orElse(0);
     }
 
     public Map<String, Integer> calculatePercentageForAllCandidates() {
@@ -56,23 +49,22 @@ public class DataModel {
             }
             return percentageMap;
         }
-
         for (Candidate candidate : candidatesData) {
             percentageMap.put(candidate.getName(), (int) Math.floor((candidate.getVoteCount() / (double) getTotalVotes()) * 100));
         }
         return percentageMap;
     }
 
-    public Candidate getCandidateById(int candidateIndex) {
-        if (candidateIndex > 0 && candidateIndex <= candidatesData.size()) {
-            return candidatesData.get(candidateIndex - 1);
-        } else {
-            return candidatesData.getFirst();
-        }
-    }
-
     public List<Candidate> getCandidatesData() {
-        return candidatesData;
+        try {
+            if (candidatesData == null) {
+                throw new NullPointerException("Модель пустая");
+            }
+            return candidatesData;
+        } catch (NullPointerException e) {
+            System.err.println("Ошибка: " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     public int getTotalVotes() {

@@ -10,15 +10,10 @@ import model.DataModel;
 import server.cookies.Cookie;
 import server.enums.ContentType;
 import server.enums.ResponseCodes;
-import utility.JsonUtil;
 import utility.Utils;
 
 import java.io.*;
-import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ServerLogic extends BasicServer {
@@ -35,7 +30,7 @@ public class ServerLogic extends BasicServer {
     private void candidatesHandler(HttpExchange exchange) {
         DataModel existingDataModel = returnExistingDataModel(exchange);
         HashMap<String, Object> candidates = new HashMap<>();
-        candidates.put("candidates", existingDataModel.getCandidatesData());
+        candidates.put("candidates", Objects.requireNonNull(existingDataModel).getCandidatesData());
         renderTemplate(exchange, "candidates.html", candidates);
     }
 
@@ -43,22 +38,22 @@ public class ServerLogic extends BasicServer {
         DataModel existingDataModel = returnExistingDataModel(exchange);
         Map<String, String> postBody = parsePostBody(exchange);
         String candidateId = postBody.get("candidateId");
-        Candidate candidate = existingDataModel.getCandidatesData().stream()
+        Candidate candidate = Objects.requireNonNull(existingDataModel).getCandidatesData().stream()
                 .filter(c -> c.getId().equals(candidateId))
                 .findFirst()
                 .orElse(null);
-        if (candidate==null) {
+        if (candidate == null) {
             sendError(exchange, ResponseCodes.NOT_FOUND, "Выбранный кандидат не найден.");
             return;
         }
-        candidate.setVoteCount(candidate.getVoteCount()+1);
+        candidate.setVoteCount(candidate.getVoteCount() + 1);
         existingDataModel.setLastVotedCandidate(candidate);
         redirect303(exchange, "/thankyou");
     }
 
     private void thankyouHandler(HttpExchange exchange) {
         DataModel existingDataModel = returnExistingDataModel(exchange);
-        Candidate lastVotedCandidate = existingDataModel.getLastVotedCandidate();
+        Candidate lastVotedCandidate = Objects.requireNonNull(existingDataModel).getLastVotedCandidate();
         HashMap<String, Object> candidate = new HashMap<>();
         candidate.put("candidate", lastVotedCandidate);
         candidate.put("percentage", existingDataModel.calculatePercentageByCandidateId(lastVotedCandidate.getId()));
@@ -68,10 +63,9 @@ public class ServerLogic extends BasicServer {
     private void votesHandler(HttpExchange exchange) {
         DataModel existingDataModel = returnExistingDataModel(exchange);
         HashMap<String, Object> candidates = new HashMap<>();
-        List<Candidate> sortedCandidates = existingDataModel.getCandidatesData().stream()
+        List<Candidate> sortedCandidates = Objects.requireNonNull(existingDataModel).getCandidatesData().stream()
                 .sorted(Comparator.comparing(Candidate::getVoteCount).reversed())
                 .collect(Collectors.toList());
-
         candidates.put("candidates", sortedCandidates);
         candidates.put("percentage", existingDataModel.calculatePercentageForAllCandidates());
         renderTemplate(exchange, "votes.html", candidates);
@@ -82,25 +76,13 @@ public class ServerLogic extends BasicServer {
         return Utils.parseUrlEncoded(raw, "&");
     }
 
-    private int getIdFromQuery(HttpExchange exchange) {
-        String s = getQueryParams(exchange);
-
-        if (s == null) {
-            respond404(exchange);
-        }
-
-        var map = Utils.parseUrlEncoded(s, "&");
-        String idParam = map.get("id");
-        return Integer.parseInt(idParam);
-    }
-
     protected void redirect303(HttpExchange exchange, String path) {
         try {
             exchange.getResponseHeaders().add("Location", path);
             exchange.sendResponseHeaders(303, 0);
             exchange.getResponseBody().close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка " + e.getMessage());
         }
     }
 
@@ -132,11 +114,11 @@ public class ServerLogic extends BasicServer {
                 sendByteData(exchange, ResponseCodes.OK, ContentType.TEXT_HTML, data);
             }
         } catch (IOException | TemplateException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка " + e.getMessage());
         }
     }
 
-    private DataModel returnExistingDataModel (HttpExchange exchange) {
+    private DataModel returnExistingDataModel(HttpExchange exchange) {
         String cookie = getCookie(exchange);
         String sessionId = Cookie.parse(cookie).get("sessionId");
         if (sessionId == null || sessionId.isEmpty()) {
