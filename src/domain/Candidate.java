@@ -36,12 +36,4 @@ public class Candidate {
     public void setId(String id) {
         this.id = id;
     }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Candidate{");
-        sb.append("name='").append(name).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
 }

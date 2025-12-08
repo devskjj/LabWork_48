@@ -1,4 +1,3 @@
-import model.DataModel;
 import server.ServerLogic;
 
 import java.io.IOException;
@@ -10,7 +9,7 @@ public class Main {
         try {
             new ServerLogic("localhost", 9889).start();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка " + e.getMessage());
         }
     }
 }
