@@ -30,32 +30,14 @@ public class ServerLogic extends BasicServer {
     }
 
     private void candidatesHandler(HttpExchange exchange) {
-        String cookie = getCookie(exchange);
-        String sessionId = Cookie.parse(cookie).get("sessionId");
-        if (sessionId == null || sessionId.isEmpty()) {
-            DataModel candidates = new DataModel();
-            Cookie setCookie = Session.createSessionCookie(candidates);
-            setCookie(exchange, setCookie);
-            redirect303(exchange, "/");
-            return;
-        }
-        DataModel existingDataModel = Session.getSession().get(sessionId);
+        DataModel existingDataModel = returnExistingDataModel(exchange);
         HashMap<String, Object> candidates = new HashMap<>();
         candidates.put("candidates", existingDataModel.getCandidatesData());
         renderTemplate(exchange, "candidates.html", candidates);
     }
 
     private void thankyouFormHandler(HttpExchange exchange) {
-        String cookie = getCookie(exchange);
-        String sessionId = Cookie.parse(cookie).get("sessionId");
-        if (sessionId == null || sessionId.isEmpty()) {
-            DataModel candidates = new DataModel();
-            Cookie setCookie = Session.createSessionCookie(candidates);
-            setCookie(exchange, setCookie);
-            redirect303(exchange, "/");
-            return;
-        }
-        DataModel existingDataModel = Session.getSession().get(sessionId);
+        DataModel existingDataModel = returnExistingDataModel(exchange);
         Map<String, String> postBody = parsePostBody(exchange);
         String candidateId = postBody.get("candidateId");
         Candidate candidate = existingDataModel.getCandidatesData().stream()
@@ -68,41 +50,20 @@ public class ServerLogic extends BasicServer {
         }
         candidate.setVoteCount(candidate.getVoteCount()+1);
         existingDataModel.setLastVotedCandidate(candidate);
-        System.out.println("check1");
         redirect303(exchange, "/thankyou");
     }
 
     private void thankyouHandler(HttpExchange exchange) {
-        String cookie = getCookie(exchange);
-        String sessionId = Cookie.parse(cookie).get("sessionId");
-        if (sessionId == null || sessionId.isEmpty()) {
-            DataModel candidates = new DataModel();
-            Cookie setCookie = Session.createSessionCookie(candidates);
-            setCookie(exchange, setCookie);
-            redirect303(exchange, "/");
-            return;
-        }
-        DataModel existingDataModel = Session.getSession().get(sessionId);
+        DataModel existingDataModel = returnExistingDataModel(exchange);
         Candidate lastVotedCandidate = existingDataModel.getLastVotedCandidate();
         HashMap<String, Object> candidate = new HashMap<>();
         candidate.put("candidate", lastVotedCandidate);
         candidate.put("percentage", existingDataModel.calculatePercentageByCandidateId(lastVotedCandidate.getId()));
-        System.out.println(lastVotedCandidate.getId());
-        System.out.println(existingDataModel.calculatePercentageByCandidateId(lastVotedCandidate.getId()));
         renderTemplate(exchange, "thankyou.html", candidate);
     }
 
     private void votesHandler(HttpExchange exchange) {
-        String cookie = getCookie(exchange);
-        String sessionId = Cookie.parse(cookie).get("sessionId");
-        if (sessionId == null || sessionId.isEmpty()) {
-            DataModel candidates = new DataModel();
-            Cookie setCookie = Session.createSessionCookie(candidates);
-            setCookie(exchange, setCookie);
-            redirect303(exchange, "/");
-            return;
-        }
-        DataModel existingDataModel = Session.getSession().get(sessionId);
+        DataModel existingDataModel = returnExistingDataModel(exchange);
         HashMap<String, Object> candidates = new HashMap<>();
         candidates.put("candidates", existingDataModel.getCandidatesData());
         candidates.put("percentage", existingDataModel.calculatePercentageForAllCandidates());
@@ -166,5 +127,18 @@ public class ServerLogic extends BasicServer {
         } catch (IOException | TemplateException e) {
             e.printStackTrace();
         }
+    }
+
+    private DataModel returnExistingDataModel (HttpExchange exchange) {
+        String cookie = getCookie(exchange);
+        String sessionId = Cookie.parse(cookie).get("sessionId");
+        if (sessionId == null || sessionId.isEmpty()) {
+            DataModel candidates = new DataModel();
+            Cookie setCookie = Session.createSessionCookie(candidates);
+            setCookie(exchange, setCookie);
+            redirect303(exchange, "/");
+            return null;
+        }
+        return Session.getSession().get(sessionId);
     }
 }
