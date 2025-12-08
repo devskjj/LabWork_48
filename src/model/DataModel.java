@@ -9,11 +9,9 @@ import java.util.*;
 
 public class DataModel {
     private List<Candidate> candidatesData;
-    private int totalVotes;
 
     public DataModel() {
         this.candidatesData = new ArrayList<>();
-        this.totalVotes = 3; // тест
         loadData();
     }
 
@@ -35,15 +33,15 @@ public class DataModel {
     }
 
     public int calculatePercentageByCandidateId(int candidateIndex) {
-        if (totalVotes == 0) {
+        if (getTotalVotes() == 0) {
             return 0;
         }
-        return (int) Math.floor((candidatesData.get(candidateIndex).getVoteCount() / (double) totalVotes) * 100);
+        return (int) Math.floor((candidatesData.get(candidateIndex).getVoteCount() / (double) getTotalVotes()) * 100);
     }
 
     public Map<String, Integer> calculatePercentageForAllCandidates() {
         Map<String, Integer> percentageMap = new HashMap<>();
-        if (totalVotes == 0) {
+        if (getTotalVotes() == 0) {
             for (Candidate candidate : candidatesData) {
                 percentageMap.put(candidate.getName(), 0);
             }
@@ -51,8 +49,7 @@ public class DataModel {
         }
 
         for (Candidate candidate : candidatesData) {
-            candidate.setVoteCount(1); // тест
-            percentageMap.put(candidate.getName(), (int) Math.floor((candidate.getVoteCount() / (double) totalVotes) * 100));
+            percentageMap.put(candidate.getName(), (int) Math.floor((candidate.getVoteCount() / (double) getTotalVotes()) * 100));
         }
         return percentageMap;
     }
@@ -70,10 +67,6 @@ public class DataModel {
     }
 
     public int getTotalVotes() {
-        return totalVotes;
-    }
-
-    public void setTotalVotes(int totalVotes) {
-        this.totalVotes = totalVotes;
+        return candidatesData.stream().mapToInt(Candidate::getVoteCount).sum();
     }
 }
