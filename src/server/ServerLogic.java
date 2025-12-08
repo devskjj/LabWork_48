@@ -37,6 +37,10 @@ public class ServerLogic extends BasicServer {
     }
 
     private void votesHandler(HttpExchange exchange) {
+        HashMap<String, Object> candidates = new HashMap<>();
+        candidates.put("candidates", dataModel.getCandidatesData());
+        candidates.put("percentage", dataModel.calculatePercentageForAllCandidates());
+        renderTemplate(exchange, "votes.html", candidates);
     }
 
     private Map<String, String> parsePostBody(HttpExchange exchange) {

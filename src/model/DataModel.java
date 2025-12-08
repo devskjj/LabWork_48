@@ -13,7 +13,7 @@ public class DataModel {
 
     public DataModel() {
         this.candidatesData = new ArrayList<>();
-        this.totalVotes = 0;
+        this.totalVotes = 3; // тест
         loadData();
     }
 
@@ -41,17 +41,18 @@ public class DataModel {
         return (int) Math.floor((candidatesData.get(candidateIndex).getVoteCount() / (double) totalVotes) * 100);
     }
 
-    public Map<Candidate, Integer> calculatePercentageForAllCandidates() {
-        Map<Candidate, Integer> percentageMap = new HashMap<>();
+    public Map<String, Integer> calculatePercentageForAllCandidates() {
+        Map<String, Integer> percentageMap = new HashMap<>();
         if (totalVotes == 0) {
             for (Candidate candidate : candidatesData) {
-                percentageMap.put(candidate, 0);
+                percentageMap.put(candidate.getName(), 0);
             }
             return percentageMap;
         }
 
         for (Candidate candidate : candidatesData) {
-            percentageMap.put(candidate, (int) Math.floor((candidate.getVoteCount() / (double) totalVotes) * 100));
+            candidate.setVoteCount(1); // тест
+            percentageMap.put(candidate.getName(), (int) Math.floor((candidate.getVoteCount() / (double) totalVotes) * 100));
         }
         return percentageMap;
     }
