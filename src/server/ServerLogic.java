@@ -30,12 +30,12 @@ public class ServerLogic extends BasicServer {
     private void candidatesHandler(HttpExchange exchange) {
         String cookie = getCookie(exchange);
         String sessionId = Cookie.parse(cookie).get("sessionId");
-        if (sessionId==null || sessionId.isEmpty()) {
-           DataModel candidates = new DataModel();
-           Cookie setCookie = Session.createSessionCookie(candidates);
-           setCookie(exchange, setCookie);
-           redirect303(exchange, "/");
-           return;
+        if (sessionId == null || sessionId.isEmpty()) {
+            DataModel candidates = new DataModel();
+            Cookie setCookie = Session.createSessionCookie(candidates);
+            setCookie(exchange, setCookie);
+            redirect303(exchange, "/");
+            return;
         }
         DataModel existingDataModel = Session.getSession().get(sessionId);
         HashMap<String, Object> candidates = new HashMap<>();
@@ -44,13 +44,27 @@ public class ServerLogic extends BasicServer {
     }
 
     private void thankyouHandler(HttpExchange exchange) {
-
+        String cookie = getCookie(exchange);
+        String sessionId = Cookie.parse(cookie).get("sessionId");
+        if (sessionId == null || sessionId.isEmpty()) {
+            DataModel candidates = new DataModel();
+            Cookie setCookie = Session.createSessionCookie(candidates);
+            setCookie(exchange, setCookie);
+            redirect303(exchange, "/");
+            return;
+        }
+        DataModel existingDataModel = Session.getSession().get(sessionId);
+        HashMap<String, Object> candidate = new HashMap<>();
+        Map<String, String> postBody = parsePostBody(exchange);
+        String candidateId = postBody.get("candidateId");
+        candidate.put("candidate", existingDataModel.calculatePercentageByCandidateId(candidateId));
+        renderTemplate(exchange, "thankyou.html", candidate);
     }
 
     private void votesHandler(HttpExchange exchange) {
         String cookie = getCookie(exchange);
         String sessionId = Cookie.parse(cookie).get("sessionId");
-        if (sessionId==null || sessionId.isEmpty()) {
+        if (sessionId == null || sessionId.isEmpty()) {
             DataModel candidates = new DataModel();
             Cookie setCookie = Session.createSessionCookie(candidates);
             setCookie(exchange, setCookie);

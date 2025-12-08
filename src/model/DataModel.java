@@ -36,11 +36,15 @@ public class DataModel {
         candidatesData.sort(Comparator.comparing(Candidate::getVoteCount).reversed());
     }
 
-    public int calculatePercentageByCandidateId(int candidateIndex) {
+    public int calculatePercentageByCandidateId(String candidateId) {
         if (getTotalVotes() == 0) {
             return 0;
         }
-        return (int) Math.floor((candidatesData.get(candidateIndex).getVoteCount() / (double) getTotalVotes()) * 100);
+        Optional<Candidate> candidate = candidatesData.stream().filter(c -> c.getId().equals(candidateId)).findFirst();
+        if (candidate.isPresent()) {
+            return (int) Math.floor((candidate.get().getVoteCount() / (double) getTotalVotes()) * 100);
+        }
+        return 0;
     }
 
     public Map<String, Integer> calculatePercentageForAllCandidates() {
