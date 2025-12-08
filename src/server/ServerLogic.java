@@ -34,7 +34,9 @@ public class ServerLogic extends BasicServer {
            DataModel candidates = new DataModel();
            Cookie setCookie = Session.createSessionCookie(candidates);
            setCookie(exchange, setCookie);
-           redirect303(exchange, "/");
+           HashMap<String, Object> data = new HashMap<>();
+           data.put("candidates", candidates.getCandidatesData());
+           renderTemplate(exchange, "candidates.html", data);
            return;
         }
         DataModel existingDataModel = Session.getSession().get(sessionId);
