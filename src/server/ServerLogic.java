@@ -28,8 +28,17 @@ public class ServerLogic extends BasicServer {
     }
 
     private void candidatesHandler(HttpExchange exchange) {
+        String cookie = getCookie(exchange);
+        String sessionId = Cookie.parse(cookie).get("sessionId");
+        if (sessionId==null || sessionId.isEmpty()) {
+           DataModel candidates = new DataModel();
+           Cookie setCookie = Session.createSessionCookie(candidates);
+           setCookie(exchange, setCookie);
+           redirect303(exchange, "/");
+        }
+        DataModel existingDataModel = Session.getSession().get(sessionId);
         HashMap<String, Object> candidates = new HashMap<>();
-        candidates.put("candidates", dataModel.getCandidatesData());
+        candidates.put("candidates", existingDataModel.getCandidatesData());
         renderTemplate(exchange, "candidates.html", candidates);
     }
 
